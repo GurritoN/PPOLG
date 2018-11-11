@@ -14,12 +14,30 @@ android {
             outputFileName = "${applicationId}-${variant.versionName}.apk"
         }
     }
+    signingConfigs {
+        config {
+            keyAlias 'SDLGKey'
+            keyPassword 'Apz3cmcm'
+            storeFile file('SDLG.jks')
+            storePassword 'Apz3cmcm'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "lab.gurriton.ppolg"
         minSdkVersion 23
         targetSdkVersion 28
         versionName version
+        manifestPlaceholders = [ROTATION: "portrait"]
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.config
+        }
+        debug {
+            manifestPlaceholders = [ROTATION: "unspecified"]
+            versionNameSuffix = "-dev"
+        }
     }
 }
 
