@@ -12,6 +12,8 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
+    val READ_PHONE_STATE_REQUEST_CODE = 0
+
     fun requestIMEI(){
         val manager: TelephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
         val imei: TextView = findViewById(R.id.imei)
@@ -19,7 +21,15 @@ class MainActivity : AppCompatActivity() {
             imei.text = manager.deviceId
         }
         else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE), 0)
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Permissions").setMessage("This page need permissions to show IMEI").setCancelable(false)
+                    .setNegativeButton("Got it!") { dialog, id ->
+                        run {
+                            dialog.cancel()
+                        }
+                    }.setOnCancelListener { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE), READ_PHONE_STATE_REQUEST_CODE) }
+            val alert = builder.create()
+            alert.show()
         }
     }
 
@@ -27,16 +37,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Permissions").setMessage("This app need some permissions").setCancelable(false)
-                .setNegativeButton("ОK") { dialog, id ->
-                    run {
-                        dialog.cancel()
-                    }
-                }.setOnCancelListener { requestIMEI() }
-        val alert = builder.create()
-        alert.show()
 
+        requestIMEI()
         val version: TextView = findViewById(R.id.version)
         version.text = packageManager.getPackageInfo(packageName, 0).versionName
     }
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode ) {
-            0 -> {
+            READ_PHONE_STATE_REQUEST_CODE -> {
                 val manager: TelephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
                 val imei: TextView = findViewById(R.id.imei)
                 if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED))
