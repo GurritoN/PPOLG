@@ -22,12 +22,11 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Permissions").setMessage("This page need permissions to show IMEI").setCancelable(false)
-                    .setNegativeButton("Got it!") { dialog, id ->
-                        run {
-                            dialog.cancel()
-                        }
-                    }.setOnCancelListener { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE), READ_PHONE_STATE_REQUEST_CODE) }
+            builder.setTitle("Permissions")
+                    .setMessage("This page need permissions to show IMEI")
+                    .setCancelable(false)
+                    .setNegativeButton("Got it!") { dialog, _ -> dialog.cancel() }
+                    .setOnCancelListener { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE), READ_PHONE_STATE_REQUEST_CODE) }
             val alert = builder.create()
             alert.show()
         }
@@ -40,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         requestIMEI()
         val version: TextView = findViewById(R.id.version)
-        version.text = packageManager.getPackageInfo(packageName, 0).versionName
+        version.text = BuildConfig.VERSION_NAME
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
