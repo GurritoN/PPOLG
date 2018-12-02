@@ -28,14 +28,14 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionName version
-        manifestPlaceholders = [ROTATION: "portrait"]
+        manifestPlaceholders = [ROTATION: "unspecified"]
     }
     buildTypes {
         release {
             signingConfig signingConfigs.config
+            manifestPlaceholders = [ROTATION: "portrait"]
         }
         debug {
-            manifestPlaceholders = [ROTATION: "unspecified"]
             versionNameSuffix = "-dev"
         }
     }
@@ -46,7 +46,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-alpha1'
+    implementation 'com.google.android.material:material:1.0.0-alpha1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha07'
 }
