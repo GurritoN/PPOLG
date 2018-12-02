@@ -8,7 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.appcompat.app.AlertDialog
 import android.telephony.TelephonyManager
 import android.widget.TextView
-import androidx.navigation.Navigation
+
 
 class ImeiActivity : AppCompatActivity() {
 
@@ -36,6 +36,10 @@ class ImeiActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_imei)
+
+        setSupportActionBar(findViewById(R.id.imei_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "About"
 
         requestIMEI()
         val version: TextView = findViewById(R.id.version)

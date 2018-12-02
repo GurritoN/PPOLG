@@ -20,7 +20,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ImeiActivity">
+            android:name=".ImeiActivity"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
     </application>
 
