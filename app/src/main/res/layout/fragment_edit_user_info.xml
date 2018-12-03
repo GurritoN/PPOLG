@@ -3,12 +3,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".EditUserInfo">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_menu_camera" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="140dp">
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="15dp"
+                android:hint="First Name"/>
+            <EditText
+                android:layout_gravity="center_horizontal"
+                android:layout_width="100dp"
+                android:layout_height="15dp"
+                android:hint="Last Name"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="160dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:text="E-mail:"/>
+            <EditText
+                android:layout_gravity="center_horizontal"
+                android:layout_width="100dp"
+                android:layout_height="15dp"
+                android:hint="aaaaaaaaaaaa@bbb.ccc"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="180dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:text="Phone number:"/>
+            <EditText
+                android:layout_gravity="center_horizontal"
+                android:layout_width="100dp"
+                android:layout_height="15dp"
+                android:hint="+375251234567"/>
+        </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>

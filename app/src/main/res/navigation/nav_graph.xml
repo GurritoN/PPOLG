@@ -29,6 +29,9 @@
         <action
             android:id="@+id/action_startFragment_to_blank2"
             app:destination="@id/blank2" />
+        <action
+            android:id="@+id/action_startFragment_to_RSS"
+            app:destination="@id/RSS" />
     </fragment>
     <fragment
         android:id="@+id/userPage"
@@ -54,4 +57,9 @@
         android:name="lab.gurriton.ppolg.EditUserInfo"
         android:label="fragment_edit_user_info"
         tools:layout="@layout/fragment_edit_user_info" />
+    <fragment
+        android:id="@+id/RSS"
+        android:name="lab.gurriton.ppolg.RSS"
+        android:label="fragment_rss"
+        tools:layout="@layout/fragment_rss" />
 </navigation>
