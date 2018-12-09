@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_about -> {
-                findNavController(R.id.nav_host).navigate(R.id.action_startFragment_to_imeiActivity2)
+                findNavController(R.id.nav_host).navigate(R.id.imeiActivity)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
