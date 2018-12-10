@@ -22,7 +22,7 @@ class StartFragment : Fragment() {
         super.onResume()
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            view!!.findViewById<TextView>(R.id.startScreenText).text = user.email
+            view!!.findViewById<TextView>(R.id.startScreenText).text = "Hello, user with e-mail " + user.email
         }
     }
 }
