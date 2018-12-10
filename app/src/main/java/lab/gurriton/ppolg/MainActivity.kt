@@ -1,28 +1,25 @@
 package lab.gurriton.ppolg
 
 import android.os.Bundle
-import com.google.android.material.navigation.NavigationView
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.Navigation
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(){
-
-    lateinit var drawer_layout : DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar : Toolbar = findViewById(R.id.toolbar)
-        drawer_layout = findViewById(R.id.drawer_layout)
-        val nav_view : NavigationView = findViewById(R.id.nav_view)
         setSupportActionBar(toolbar)
 
         val toggle = ActionBarDrawerToggle(
@@ -31,6 +28,31 @@ class MainActivity : AppCompatActivity(){
         toggle.syncState()
 
         NavigationUI.setupWithNavController(nav_view, findNavController(R.id.nav_host))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val header = nav_view.getHeaderView(0)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            nav_view.menu.setGroupVisible(R.id.menu_group, false)
+            nav_view.menu.setGroupVisible(R.id.login_group, true)
+            nav_view.menu.setGroupVisible(R.id.logout_group, false)
+            header.isClickable = false
+            header.findViewById<ImageView>(R.id.header_image).setImageResource(R.mipmap.ic_launcher_round)
+            header.findViewById<TextView>(R.id.header_name).text = "Unauthorized"
+            header.findViewById<TextView>(R.id.header_email).text = "Unauthorized"
+        }
+        else {
+            nav_view.menu.setGroupVisible(R.id.menu_group, true)
+            nav_view.menu.setGroupVisible(R.id.login_group, false)
+            nav_view.menu.setGroupVisible(R.id.logout_group, true)
+            nav_view.menu.getItem(4).setOnMenuItemClickListener { FirebaseAuth.getInstance().signOut(); recreate();true }
+            header.isClickable = true
+            header.findViewById<ImageView>(R.id.header_image).setImageResource(R.mipmap.ic_launcher_round) // SET USER PIC
+            header.findViewById<TextView>(R.id.header_name).text = user?.displayName ?: "Name is not set"
+            header.findViewById<TextView>(R.id.header_email).text = user.email
+        }
     }
 
     override fun onBackPressed() {

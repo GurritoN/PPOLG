@@ -7,6 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs"
 
 apply from: 'versioning.gradle'
+apply plugin: 'com.google.gms.google-services'
 
 version = getVersionName()
 
@@ -57,4 +58,7 @@ dependencies {
     def nav_version = "1.0.0-alpha08"
     implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
     implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
+    implementation 'com.google.firebase:firebase-database:16.0.1'
 }

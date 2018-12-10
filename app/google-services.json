@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "125020455019",
+    "firebase_url": "https://ppolg-863ae.firebaseio.com",
+    "project_id": "ppolg-863ae",
+    "storage_bucket": "ppolg-863ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125020455019:android:fc7edeab0ac63d9a",
+        "android_client_info": {
+          "package_name": "lab.gurriton.ppolg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "125020455019-tdk1scq2vjojf4v2avejfe6iu64m9jhp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "lab.gurriton.ppolg",
+            "certificate_hash": "2d0ab4ddd85ed7088c29f49f832ea83d49cefa0b"
+          }
+        },
+        {
+          "client_id": "125020455019-u5kid05gthe43i2q4415rjs31mnu91cs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq97SesKFn4NF_D3rH26vVtfedfoU03NA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "125020455019-u5kid05gthe43i2q4415rjs31mnu91cs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
