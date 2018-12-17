@@ -31,6 +31,8 @@ class UserPage : Fragment() {
                     last_name.setText(userInfo?.lastName)
                 if(phone != null)
                     phone.setText(userInfo?.phone)
+                if(rss != null)
+                    rss.setText(userInfo?.rssUrl)
             }
             override fun onCancelled(databaseError: DatabaseError) {
             }

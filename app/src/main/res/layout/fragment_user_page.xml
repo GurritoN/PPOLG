@@ -35,62 +35,114 @@
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"/>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="First Name: "/>
                 <TextView
                     android:id="@+id/first_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:textSize="20dp"
                     android:layout_gravity="center_horizontal"
                     android:singleLine="true" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="Last Name: "/>
                 <TextView
                     android:id="@+id/last_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:textSize="20dp"
                     android:layout_gravity="center_horizontal"
                     android:singleLine="true" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="Email: "/>
                 <TextView
                     android:id="@+id/email"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:textSize="20dp"
                     android:layout_gravity="center_horizontal"
                     android:singleLine="true" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="Phone: "/>
                 <TextView
                     android:id="@+id/phone"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:textSize="20dp"
                     android:layout_gravity="center_horizontal"
                     android:singleLine="true" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="RSS Feed Url: "/>
+                <TextView
+                    android:id="@+id/rss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
             <Button
                 android:id="@+id/edit_button"
                 style="?android:textAppearanceSmall"
