@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_startFragment_to_browserActivity"
             app:destination="@id/browserActivity" />
+        <action
+            android:id="@+id/action_startFragment_to_imeiActivity"
+            app:destination="@id/imeiActivity" />
     </fragment>
     <fragment
         android:id="@+id/userPage"
@@ -44,22 +47,37 @@
         <action
             android:id="@+id/action_userPage_to_editUserInfo"
             app:destination="@id/editUserInfo" /><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/User"/>
+        <action
+            android:id="@+id/action_userPage_to_imeiActivity"
+            app:destination="@id/imeiActivity" />
     </fragment>
     <fragment
         android:id="@+id/blank1"
         android:name="lab.gurriton.ppolg.Blank1"
         android:label="fragment_blank1"
-        tools:layout="@layout/fragment_blank1" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/1"/></fragment>
+        tools:layout="@layout/fragment_blank1" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/1"/>
+        <action
+            android:id="@+id/action_blank1_to_imeiActivity"
+            app:destination="@id/imeiActivity" />
+    </fragment>
     <fragment
         android:id="@+id/blank2"
         android:name="lab.gurriton.ppolg.Blank2"
         android:label="fragment_blank2"
-        tools:layout="@layout/fragment_blank2" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/2"/></fragment>
+        tools:layout="@layout/fragment_blank2" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/2"/>
+        <action
+            android:id="@+id/action_blank2_to_imeiActivity"
+            app:destination="@id/imeiActivity" />
+    </fragment>
     <fragment
         android:id="@+id/editUserInfo"
         android:name="lab.gurriton.ppolg.EditUserInfo"
         android:label="fragment_edit_user_info"
-        tools:layout="@layout/fragment_edit_user_info" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/EditUser"/></fragment>
+        tools:layout="@layout/fragment_edit_user_info" ><deepLink app:uri="sdapp://lab.gurriton.ppolg/page/EditUser"/>
+        <action
+            android:id="@+id/action_editUserInfo_to_imeiActivity"
+            app:destination="@id/imeiActivity" />
+    </fragment>
     <activity
         android:id="@+id/loginActivity"
         android:name="lab.gurriton.ppolg.LoginActivity"

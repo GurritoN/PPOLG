@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.fragment_edit_user_info.*
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
@@ -77,20 +78,22 @@ class DBWork{
             return null
         }
 
-        fun SaveUserInfo(userInfo: UserInfo) {
+        fun SaveUserInfo(userInfo: UserInfo): Task<Void>? {
             val user = GetUser()
             if (user != null)
-                FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).setValue(userInfo)
+                return FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).setValue(userInfo)
+            return null
         }
 
-        fun SaveAvatar(bitmap: Bitmap){
+        fun SaveAvatar(bitmap: Bitmap): UploadTask?{
             val user = GetUser()
             if (user != null) {
                 val storage = FirebaseStorage.getInstance().getReference()
                 val baos = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                storage.child("avatars/" + user.uid + ".jpg").putBytes(baos.toByteArray())
+                return storage.child("avatars/" + user.uid + ".jpg").putBytes(baos.toByteArray())
             }
+            return null
         }
         fun SaveRSSCache(doc: Document){
             val user = GetUser()

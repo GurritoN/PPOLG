@@ -2,6 +2,7 @@ package lab.gurriton.ppolg
 
 import android.app.Activity.RESULT_OK
 import android.Manifest
+import android.app.ProgressDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,12 +23,15 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import kotlin.jvm.javaClass
@@ -44,6 +48,11 @@ class EditUserInfo : Fragment() {
     lateinit var phone: String
     lateinit var rss: String
     var savedPhoto: Bitmap? = null
+    var callbacksNeeded = 3
+    var positiveCallbacks = 0
+    var negativeCallbacks = 0
+    var progressDialog: ProgressDialog? = null
+    var onLoadingCallbackTriggered: Boolean = false
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -82,6 +91,9 @@ class EditUserInfo : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (savedInstanceState == null) {
+            progressDialog = ProgressDialog(context)
+            progressDialog?.setMessage("Loading...")
+            progressDialog?.show()
             val user = DBWork.GetUser()
             edit_email.setText(user!!.email)
             DBWork.GetUserInfo()?.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -91,6 +103,9 @@ class EditUserInfo : Fragment() {
                     edit_last_name.setText(userInfo?.lastName)
                     edit_phone.setText(userInfo?.phone)
                     edit_rss.setText(userInfo?.rssUrl)
+                    if (onLoadingCallbackTriggered)
+                        progressDialog?.dismiss()
+                    onLoadingCallbackTriggered = true
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -99,12 +114,15 @@ class EditUserInfo : Fragment() {
             DBWork.GetAvatar()?.addOnSuccessListener {
                 photo = BitmapFactory.decodeByteArray(it, 0, it.size)
                 edit_profile_photo.setImageBitmap(photo)
+            }?.addOnCompleteListener {
+                if (onLoadingCallbackTriggered)
+                    progressDialog?.dismiss()
+                onLoadingCallbackTriggered = true
             }
         }
         edit_gallery.setOnClickListener { takeFromGallery() }
         edit_camera.setOnClickListener { takePhoto() }
         edit_save.setOnClickListener { save(edit_email?.text.toString(), edit_first_name?.text.toString(), edit_last_name?.text.toString(), edit_phone?.text.toString(), this.photo, edit_rss?.text.toString()) }
-
     }
 
     fun takePhoto() {
@@ -151,16 +169,37 @@ class EditUserInfo : Fragment() {
         }
     }
 
+    fun savingCallback(result: Boolean){
+        if (result)
+            positiveCallbacks++
+        else
+            negativeCallbacks++
+        if (positiveCallbacks + negativeCallbacks == callbacksNeeded) {
+            progressDialog?.dismiss()
+            if (negativeCallbacks == 0)
+                Snackbar.make(view!!, "Saved!", Snackbar.LENGTH_LONG)
+                        .show()
+            else
+                Snackbar.make(view!!, "Something went wrong...", Snackbar.LENGTH_LONG)
+                        .show()
+        }
+    }
+
     fun save(email: String, firstName: String, lastName: String, phone: String, photo: Bitmap?, rss: String){
         val user = DBWork.GetUser()
 
         if (user != null) {
-            user.updateEmail(email)
+            progressDialog = ProgressDialog(context)
+            progressDialog?.setMessage("Saving...")
+            progressDialog?.show()
+            user.updateEmail(email).addOnCompleteListener {
+                savingCallback(it.isSuccessful)
+            }
 
-            DBWork.SaveUserInfo(UserInfo(email, firstName, lastName, phone, rss))
+            DBWork.SaveUserInfo(UserInfo(email, firstName, lastName, phone, rss))!!.addOnCompleteListener { savingCallback(it.isSuccessful) }
 
             if (photo != null) {
-                DBWork.SaveAvatar(photo)
+                DBWork.SaveAvatar(photo)!!.addOnCompleteListener { savingCallback(it.isSuccessful) }
             }
         }
     }
@@ -173,25 +212,5 @@ class EditUserInfo : Fragment() {
         savedPhoto = this.photo
         rss = edit_rss?.text.toString()
         super.onPause()
-    }
-
-    override fun onDestroy() {
-        val builder = AlertDialog.Builder(context!!)
-        builder.setMessage("Save changes?")
-                .setCancelable(false)
-                .setNegativeButton("Discard") { dialog, _ ->
-                    run {
-                        dialog.cancel()
-                    }
-                }
-                .setPositiveButton("Save") { dialog, _ ->
-                    run {
-                        save(email, firstName, lastName, phone, photo, rss)
-                        dialog.cancel()
-                    }
-                }
-        val alert = builder.create()
-        alert.show()
-        super.onDestroy()
     }
 }

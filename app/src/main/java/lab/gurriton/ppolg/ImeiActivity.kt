@@ -8,6 +8,10 @@ import androidx.core.app.ActivityCompat
 import androidx.appcompat.app.AlertDialog
 import android.telephony.TelephonyManager
 import android.widget.TextView
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
+import kotlinx.android.synthetic.main.activity_imei.*
 
 
 class ImeiActivity : AppCompatActivity() {
@@ -39,6 +43,7 @@ class ImeiActivity : AppCompatActivity() {
 
         setSupportActionBar(findViewById(R.id.imei_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        imei_toolbar.setNavigationOnClickListener { super.onBackPressed() }
         supportActionBar?.title = "About"
 
         requestIMEI()

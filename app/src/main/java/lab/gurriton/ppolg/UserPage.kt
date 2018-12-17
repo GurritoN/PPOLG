@@ -1,5 +1,6 @@
 package lab.gurriton.ppolg
 
+import android.app.ProgressDialog
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,8 +19,13 @@ import kotlinx.android.synthetic.main.fragment_user_page.*
 
 class UserPage : Fragment() {
 
+    var oneCallbackTriggered: Boolean = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val progressDialog: ProgressDialog = ProgressDialog(context)
+        progressDialog.setMessage("Loading")
+        progressDialog.show()
         val user = FirebaseAuth.getInstance().currentUser
         email.setText(user!!.email)
         FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addValueEventListener(object : ValueEventListener {
@@ -33,6 +39,9 @@ class UserPage : Fragment() {
                     phone.setText(userInfo?.phone)
                 if(rss != null)
                     rss.setText(userInfo?.rssUrl)
+                if (oneCallbackTriggered)
+                    progressDialog.dismiss()
+                oneCallbackTriggered = true
             }
             override fun onCancelled(databaseError: DatabaseError) {
             }
@@ -41,6 +50,10 @@ class UserPage : Fragment() {
         DBWork.GetAvatar()?.addOnSuccessListener {
             if (profile_photo != null)
                 profile_photo.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
+        }?.addOnCompleteListener {
+            if (oneCallbackTriggered)
+                progressDialog.dismiss()
+            oneCallbackTriggered = true
         }
         edit_button.setOnClickListener { activity!!.findNavController(R.id.nav_host).navigate(R.id.action_userPage_to_editUserInfo) }
 

@@ -1,5 +1,6 @@
 package lab.gurriton.ppolg
 
+import android.app.ProgressDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Bitmap
@@ -22,14 +23,17 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.net.NetworkInfo
 import android.content.Context.CONNECTIVITY_SERVICE
+import android.content.DialogInterface
 import androidx.core.content.ContextCompat.getSystemService
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.PersistableBundle
+import androidx.appcompat.app.AlertDialog
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
     lateinit var cm: ConnectivityManager
 
@@ -67,6 +71,8 @@ class MainActivity : AppCompatActivity(){
 
     }
 
+
+
     override fun onResume() {
         super.onResume()
         val header = nav_view.getHeaderView(0)
@@ -80,6 +86,9 @@ class MainActivity : AppCompatActivity(){
             header.findViewById<TextView>(R.id.header_email).text = "Unauthorized"
         }
         else {
+            val progressDialog: ProgressDialog = ProgressDialog(this)
+            progressDialog.setMessage("Loading")
+            progressDialog.show()
             nav_view.menu.setGroupVisible(R.id.menu_group, true)
             nav_view.menu.setGroupVisible(R.id.login_group, false)
             nav_view.menu.setGroupVisible(R.id.logout_group, true)
@@ -89,7 +98,7 @@ class MainActivity : AppCompatActivity(){
                 header.findViewById<ImageView>(R.id.header_image).setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
             }?.addOnFailureListener {
                 header.findViewById<ImageView>(R.id.header_image).setImageResource(R.mipmap.ic_launcher_round)
-            }
+            }?.addOnCompleteListener { progressDialog.dismiss() }
             header.findViewById<TextView>(R.id.header_email).text = user.email
         }
     }
@@ -98,7 +107,10 @@ class MainActivity : AppCompatActivity(){
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            if (findNavController(R.id.nav_host).currentDestination?.id == R.id.editUserInfo)
+                askAndNavigateToFragment(R.id.userPage)
+            else
+                super.onBackPressed()
         }
     }
 
@@ -110,10 +122,29 @@ class MainActivity : AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_about -> {
-                findNavController(R.id.nav_host).navigate(R.id.imeiActivity)
+                if (findNavController(R.id.nav_host).currentDestination?.id == R.id.editUserInfo)
+                    askAndNavigateToFragment(item.itemId)
+                else
+                    findNavController(R.id.nav_host).navigate(R.id.imeiActivity)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (findNavController(R.id.nav_host).currentDestination?.id == R.id.editUserInfo)
+            askAndNavigateToFragment(item.itemId)
+        return true
+    }
+
+    fun askAndNavigateToFragment(fragmentId: Int) {
+        val builder = AlertDialog.Builder(this);
+        builder.setMessage("You're about to loose unsaved changes!")
+                .setPositiveButton("Leave") { _, _ ->
+                    findNavController(R.id.nav_host).navigate(fragmentId)
+                }.setNegativeButton("Stay") { _, _ ->
+                }
+        builder.create().show();
     }
 }
