@@ -1,5 +1,6 @@
 package lab.gurriton.ppolg
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -18,6 +19,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.net.NetworkInfo
+import android.content.Context.CONNECTIVITY_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+import android.net.ConnectivityManager
+
+
 
 class MainActivity : AppCompatActivity(){
 
@@ -36,6 +43,9 @@ class MainActivity : AppCompatActivity(){
             drawer_layout.closeDrawer(GravityCompat.START)
             findNavController(R.id.nav_host).navigate(R.id.userPage)
         }
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetworkInfo
+        val isConnected = activeNetwork.isConnected
     }
 
     override fun onResume() {

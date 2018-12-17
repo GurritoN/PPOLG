@@ -14,8 +14,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import kotlinx.android.synthetic.main.fragment_edit_user_info.*
 import android.content.pm.PackageManager
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -32,6 +38,41 @@ class EditUserInfo : Fragment() {
     val PICK_IMAGE = 0
     val TAKE_PHOTO = 1
     var photo: Bitmap? = null
+    lateinit var email: String
+    lateinit var firstName: String
+    lateinit var lastName: String
+    lateinit var phone: String
+    lateinit var rss: String
+    var savedPhoto: Bitmap? = null
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("first_name", view?.findViewById<EditText>(R.id.edit_first_name)?.text.toString())
+        outState.putString("last_name", view?.findViewById<EditText>(R.id.edit_last_name)?.text.toString())
+        outState.putString("email", view?.findViewById<EditText>(R.id.edit_email)?.text.toString())
+        outState.putString("phone", view?.findViewById<EditText>(R.id.edit_phone)?.text.toString())
+        outState.putString("RSS", view?.findViewById<EditText>(R.id.edit_rss)?.text.toString())
+        if (edit_profile_photo != null)
+            outState.putByteArray("avatar", DBWork.BitmapToByteArray(photo!!))
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        edit_profile_photo.setImageResource(R.mipmap.ic_launcher_round)
+        if (savedInstanceState != null){
+            val image = savedInstanceState.getByteArray("avatar")
+            if (image != null){
+                photo = DBWork.ByteArrayToBitmap(image)
+            }
+
+            view?.findViewById<EditText>(R.id.edit_email)?.setText(savedInstanceState.getString("email"))
+            view?.findViewById<EditText>(R.id.edit_first_name)?.setText(savedInstanceState.getString("first_name"))
+            view?.findViewById<EditText>(R.id.edit_last_name)?.setText(savedInstanceState.getString("last_name"))
+            view?.findViewById<EditText>(R.id.edit_phone)?.setText(savedInstanceState.getString("phone"))
+            view?.findViewById<EditText>(R.id.edit_rss)?.setText(savedInstanceState.getString("RSS"))
+            view?.findViewById<ImageView>(R.id.edit_profile_photo)?.setImageBitmap(photo)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -40,26 +81,30 @@ class EditUserInfo : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val user = FirebaseAuth.getInstance().currentUser
-        edit_email.setText(user!!.email)
-        FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val userInfo: UserInfo? = dataSnapshot.getValue(UserInfo::class.java)
-                edit_first_name.setText(userInfo?.firstName)
-                edit_last_name.setText(userInfo?.lastName)
-                edit_phone.setText(userInfo?.phone)
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-        edit_profile_photo.setImageResource(R.mipmap.ic_launcher_round)
-        FirebaseStorage.getInstance().getReference().child("avatars/" + user.uid + ".jpg").getBytes(1024*1024*1024).addOnSuccessListener {
-            edit_profile_photo.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
-        }
+        if (savedInstanceState == null) {
+            val user = FirebaseAuth.getInstance().currentUser
+            edit_email.setText(user!!.email)
+            FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val userInfo: UserInfo? = dataSnapshot.getValue(UserInfo::class.java)
+                    edit_first_name.setText(userInfo?.firstName)
+                    edit_last_name.setText(userInfo?.lastName)
+                    edit_phone.setText(userInfo?.phone)
+                    edit_rss.setText(userInfo?.rssUrl)
+                }
 
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
+            FirebaseStorage.getInstance().getReference().child("avatars/" + user.uid + ".jpg").getBytes(1024 * 1024 * 1024).addOnSuccessListener {
+                photo = BitmapFactory.decodeByteArray(it, 0, it.size)
+                edit_profile_photo.setImageBitmap(photo)
+            }
+        }
         edit_gallery.setOnClickListener { takeFromGallery() }
         edit_camera.setOnClickListener { takePhoto() }
-        edit_save.setOnClickListener { save() }
+        edit_save.setOnClickListener { save(edit_email?.text.toString(), edit_first_name!!.text.toString(), edit_last_name!!.text.toString(), edit_phone!!.text.toString(), this.photo, edit_rss!!.text.toString()) }
+
     }
 
     fun takePhoto() {
@@ -81,12 +126,16 @@ class EditUserInfo : Fragment() {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 PICK_IMAGE -> {
-                    photo = BitmapFactory.decodeStream(activity!!.contentResolver.openInputStream(data!!.data))
-                    edit_profile_photo.setImageBitmap(photo)
+                    if (data != null) {
+                        photo = BitmapFactory.decodeStream(activity!!.contentResolver.openInputStream(data.data))
+                        edit_profile_photo.setImageBitmap(photo)
+                    }
                 }
                 TAKE_PHOTO -> {
-                    photo = data!!.extras.get("data") as Bitmap
-                    edit_profile_photo.setImageBitmap(photo)
+                    if (data != null) {
+                        photo = data.extras?.get("data") as Bitmap
+                        edit_profile_photo.setImageBitmap(photo)
+                    }
                 }
             }
         }
@@ -102,23 +151,51 @@ class EditUserInfo : Fragment() {
         }
     }
 
-    fun save(){
+    fun save(email: String, firstName: String, lastName: String, phone: String, photo: Bitmap?, rss: String){
         val user = FirebaseAuth.getInstance().currentUser
-        val email = edit_email!!.text.toString()
-        val firstName = edit_first_name!!.text.toString()
-        val lastName = edit_last_name!!.text.toString()
-        val phone = edit_phone!!.text.toString()
 
-        user!!.updateEmail(email)
+        if (user != null) {
+            user.updateEmail(email)
 
-        val db = FirebaseDatabase.getInstance().getReference()
-        db.child("users").child(user.uid).setValue(UserInfo(email, firstName, lastName, phone))
+            val db = FirebaseDatabase.getInstance().getReference()
+            db.child("users").child(user.uid).setValue(UserInfo(email, firstName, lastName, phone, rss))
 
-        if (photo != null) {
-        val storage = FirebaseStorage.getInstance().getReference()
-        val baos = ByteArrayOutputStream()
-            photo?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            storage.child("avatars/" + user.uid + ".jpg").putBytes(baos.toByteArray())
+            if (photo != null) {
+                val storage = FirebaseStorage.getInstance().getReference()
+                val baos = ByteArrayOutputStream()
+                photo.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                storage.child("avatars/" + user.uid + ".jpg").putBytes(baos.toByteArray())
+            }
         }
+    }
+
+    override fun onPause() {
+        email = edit_email?.text.toString()
+        firstName = edit_first_name?.text.toString()
+        lastName = edit_last_name?.text.toString()
+        phone = edit_phone?.text.toString()
+        savedPhoto = this.photo
+        rss = edit_rss?.text.toString()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setMessage("Save changes?")
+                .setCancelable(false)
+                .setNegativeButton("Discard") { dialog, _ ->
+                    run {
+                        dialog.cancel()
+                    }
+                }
+                .setPositiveButton("Save") { dialog, _ ->
+                    run {
+                        save(email, firstName, lastName, phone, photo, rss)
+                        dialog.cancel()
+                    }
+                }
+        val alert = builder.create()
+        alert.show()
+        super.onDestroy()
     }
 }

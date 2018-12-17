@@ -22,19 +22,23 @@ class UserPage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val user = FirebaseAuth.getInstance().currentUser
         email.setText(user!!.email)
-        FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+        FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val userInfo: UserInfo? = dataSnapshot.getValue(UserInfo::class.java)
-                first_name.setText(userInfo?.firstName)
-                last_name.setText(userInfo?.lastName)
-                phone.setText(userInfo?.phone)
+                if(first_name != null)
+                    first_name.setText(userInfo?.firstName)
+                if(last_name != null)
+                    last_name.setText(userInfo?.lastName)
+                if(phone != null)
+                    phone.setText(userInfo?.phone)
             }
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
         profile_photo.setImageResource(R.mipmap.ic_launcher_round)
         FirebaseStorage.getInstance().getReference().child("avatars/" + user.uid + ".jpg").getBytes(1024*1024*1024).addOnSuccessListener {
-            profile_photo.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
+            if (profile_photo != null)
+                profile_photo.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
         }
         edit_button.setOnClickListener { activity!!.findNavController(R.id.nav_host).navigate(R.id.action_userPage_to_editUserInfo) }
 

@@ -7,6 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs"
 
 apply from: 'versioning.gradle'
+
 apply plugin: 'com.google.gms.google-services'
 
 version = getVersionName()
@@ -62,4 +63,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:16.0.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-storage:16.0.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 }

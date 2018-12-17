@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "125020455019-45eadt8021r4km9bgctl402uqhna9h4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "lab.gurriton.ppolg",
+            "certificate_hash": "81baf1448e6a626e01c37a7e0713dae51c83997d"
+          }
+        },
+        {
           "client_id": "125020455019-u5kid05gthe43i2q4415rjs31mnu91cs.apps.googleusercontent.com",
           "client_type": 3
         }
