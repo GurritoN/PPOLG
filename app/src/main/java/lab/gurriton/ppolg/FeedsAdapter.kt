@@ -23,7 +23,6 @@ class FeedsAdapter(internal var context: Context, internal var feedItems: ArrayL
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-//        YoYo.with(Techniques.FadeIn).playOn(holder.cardView)
         val current = feedItems[position]
         holder.Title.text = current.title
         holder.Description.text = current.description

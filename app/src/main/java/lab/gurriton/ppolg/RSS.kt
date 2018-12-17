@@ -15,7 +15,7 @@ import java.net.Inet4Address
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-class ReadRss(internal var context: Context, internal var recyclerView: RecyclerView, var address: String, var orientation: Int, var data: Document? = null) : AsyncTask<Void, Void, Void>() {
+class ReadRss(var context: Context, var recyclerView: RecyclerView, var address: String, var orientation: Int, var data: Document? = null) : AsyncTask<Void, Void, Void>() {
     internal var progressDialog: ProgressDialog
 
     internal lateinit var feedItems: ArrayList<FeedItem>
@@ -53,9 +53,9 @@ class ReadRss(internal var context: Context, internal var recyclerView: Recycler
             recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.addItemDecoration(VerticalSpace(20))
         recyclerView.adapter = adapter
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null)
-            FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).child("rssCache").setValue(DBWork.XMLToString(data!!))
+        val user = DBWork.GetUser()
+        if (user != null && data != null)
+            DBWork.SaveRSSCache(data!!)
     }
 
     private fun ProcessXml(data: Document?) {
@@ -104,7 +104,6 @@ class ReadRss(internal var context: Context, internal var recyclerView: Recycler
             val builder = builderFactory.newDocumentBuilder()
             return builder.parse(inputStream)
         } catch (e: Exception) {
-            e.printStackTrace()
             return null
         }
 

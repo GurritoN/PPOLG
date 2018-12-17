@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(){
     override fun onResume() {
         super.onResume()
         val header = nav_view.getHeaderView(0)
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = DBWork.GetUser()
         if (user == null) {
             nav_view.menu.setGroupVisible(R.id.menu_group, false)
             nav_view.menu.setGroupVisible(R.id.login_group, true)
@@ -85,9 +85,9 @@ class MainActivity : AppCompatActivity(){
             nav_view.menu.setGroupVisible(R.id.logout_group, true)
             nav_view.menu.getItem(4).setOnMenuItemClickListener { FirebaseAuth.getInstance().signOut(); recreate();true }
             header.isClickable = true
-            FirebaseStorage.getInstance().getReference().child("avatars/" + user.uid + ".jpg").getBytes(1024*1024*1024).addOnSuccessListener {
+            DBWork.GetAvatar()?.addOnSuccessListener {
                 header.findViewById<ImageView>(R.id.header_image).setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
-            }.addOnFailureListener {
+            }?.addOnFailureListener {
                 header.findViewById<ImageView>(R.id.header_image).setImageResource(R.mipmap.ic_launcher_round)
             }
             header.findViewById<TextView>(R.id.header_email).text = user.email

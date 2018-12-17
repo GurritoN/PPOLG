@@ -35,17 +35,15 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     private fun initWebView() {
-        webView.setWebChromeClient(MyWebChromeClient(this));
-        webView.clearCache(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setHorizontalScrollBarEnabled(false);
+        webView.setWebChromeClient(MyWebChromeClient(this))
+        webView.clearCache(true)
+        webView.getSettings().setJavaScriptEnabled(true)
+        webView.setHorizontalScrollBarEnabled(false)
 
-        webView.loadUrl(url)
-
-        webView.clearCache(true);
-        webView.clearHistory();
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setHorizontalScrollBarEnabled(false);
+        webView.clearCache(true)
+        webView.clearHistory()
+        webView.getSettings().setJavaScriptEnabled(true)
+        webView.setHorizontalScrollBarEnabled(false)
     }
 
     private class MyWebChromeClient(var context: Context) : WebChromeClient()

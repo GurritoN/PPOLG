@@ -39,9 +39,9 @@ class StartFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = DBWork.GetUser()
         if (user != null) {
-            FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            DBWork.GetUserInfo()?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val userInfo: UserInfo? = dataSnapshot.getValue(UserInfo::class.java)
                     RSSUrl = userInfo?.rssUrl
@@ -53,21 +53,24 @@ class StartFragment : Fragment() {
                                 .setPositiveButton("Set") { dialog, _ ->
                                     run {
                                         RSSUrl = edit.text.toString()
-                                        FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).child("rssUrl").setValue(RSSUrl)
+                                        DBWork.SaveRSSUrl(RSSUrl!!)
                                         dialog.cancel()
                                     }
                                 }
                         builder.show()
                     }
-                    recyclerView = view!!.findViewById<RecyclerView>(R.id.recyclerview)
+                    recyclerView = view!!.findViewById(R.id.recyclerview) as RecyclerView
                     val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                     var data: Document? = null
                     if (cm.activeNetworkInfo == null || !cm.activeNetworkInfo.isConnected) {
-                        data = DBWork.StringToXML(dataSnapshot.child("rssCache").value.toString())
+                        val dataStr: String? = dataSnapshot.child("rssCache").value.toString()
+                        if (dataStr != null)
+                            data = DBWork.StringToXML(dataStr)
                     }
-                    val readRss = ReadRss(context!!, recyclerView!!, RSSUrl!!, activity!!.resources.configuration.orientation, data)
-                    readRss.execute()
-
+                    if (RSSUrl != null) {
+                        val readRss = ReadRss(context!!, recyclerView!!, RSSUrl!!, activity!!.resources.configuration.orientation, data)
+                        readRss.execute()
+                    }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {

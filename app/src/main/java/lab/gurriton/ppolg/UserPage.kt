@@ -36,7 +36,7 @@ class UserPage : Fragment() {
             }
         })
         profile_photo.setImageResource(R.mipmap.ic_launcher_round)
-        FirebaseStorage.getInstance().getReference().child("avatars/" + user.uid + ".jpg").getBytes(1024*1024*1024).addOnSuccessListener {
+        DBWork.GetAvatar()?.addOnSuccessListener {
             if (profile_photo != null)
                 profile_photo.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
         }
