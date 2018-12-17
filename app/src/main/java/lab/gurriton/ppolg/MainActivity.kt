@@ -25,16 +25,18 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.net.ConnectivityManager
 import android.net.Network
+import android.os.PersistableBundle
+import com.google.firebase.database.FirebaseDatabase
 
 
 class MainActivity : AppCompatActivity(){
+
+    lateinit var cm: ConnectivityManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -45,13 +47,21 @@ class MainActivity : AppCompatActivity(){
             drawer_layout.closeDrawer(GravityCompat.START)
             findNavController(R.id.nav_host).navigate(R.id.userPage)
         }
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (cm.activeNetworkInfo == null || !cm.activeNetworkInfo.isConnected)
+            network_icon.setImageResource(R.drawable.ic_network_bad)
         cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback(){
             override fun onAvailable(network: Network){
-                network_icon.setImageResource(R.drawable.ic_network_active)
+                runOnUiThread {network_icon.setImageResource(R.drawable.ic_network_active)}
+            }
+            override fun onUnavailable() {
+                runOnUiThread {network_icon.setImageResource(R.drawable.ic_network_bad)}
+            }
+            override fun onLosing(network: Network?, maxMsToLive: Int) {
+                runOnUiThread {network_icon.setImageResource(R.drawable.ic_network_bad)}
             }
             override fun onLost(network: Network){
-                network_icon.setImageResource(R.drawable.ic_network_bad)
+                runOnUiThread {network_icon.setImageResource(R.drawable.ic_network_bad)}
             }
         })
 

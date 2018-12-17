@@ -16,11 +16,14 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_start.*
 import android.os.AsyncTask.execute
 import ReadRss
+import android.content.Context
+import android.net.ConnectivityManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
-
-
+import org.w3c.dom.Document
+import org.xml.sax.InputSource
+import javax.xml.parsers.DocumentBuilder
 
 
 class StartFragment : Fragment() {
@@ -57,8 +60,14 @@ class StartFragment : Fragment() {
                         builder.show()
                     }
                     recyclerView = view!!.findViewById<RecyclerView>(R.id.recyclerview)
-                    val readRss = ReadRss(context!!, recyclerView!!, RSSUrl!!, activity!!.resources.configuration.orientation)
+                    val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    var data: Document? = null
+                    if (cm.activeNetworkInfo == null || !cm.activeNetworkInfo.isConnected) {
+                        data = DBWork.StringToXML(dataSnapshot.child("rssCache").value.toString())
+                    }
+                    val readRss = ReadRss(context!!, recyclerView!!, RSSUrl!!, activity!!.resources.configuration.orientation, data)
                     readRss.execute()
+
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {

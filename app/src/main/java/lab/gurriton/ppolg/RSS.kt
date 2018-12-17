@@ -6,17 +6,16 @@ import androidx.recyclerview.widget.RecyclerView
 import android.os.AsyncTask
 import androidx.navigation.NavHost
 import androidx.recyclerview.widget.GridLayoutManager
-import lab.gurriton.ppolg.FeedItem
-import lab.gurriton.ppolg.FeedsAdapter
-import lab.gurriton.ppolg.R
-import lab.gurriton.ppolg.VerticalSpace
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import lab.gurriton.ppolg.*
 import org.w3c.dom.Document
 import java.net.HttpURLConnection
 import java.net.Inet4Address
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-class ReadRss(internal var context: Context, internal var recyclerView: RecyclerView, var address: String, var orientation: Int) : AsyncTask<Void, Void, Void>() {
+class ReadRss(internal var context: Context, internal var recyclerView: RecyclerView, var address: String, var orientation: Int, var data: Document? = null) : AsyncTask<Void, Void, Void>() {
     internal var progressDialog: ProgressDialog
 
     internal lateinit var feedItems: ArrayList<FeedItem>
@@ -37,7 +36,9 @@ class ReadRss(internal var context: Context, internal var recyclerView: Recycler
     //This method will execute in background so in this method download rss feeds
     override fun doInBackground(vararg params: Void): Void? {
         //call process xml method to process document we downloaded from getData() method
-        ProcessXml(Getdata())
+        if (data == null)
+            data = Getdata()
+        ProcessXml(data)
 
         return null
     }
@@ -52,11 +53,14 @@ class ReadRss(internal var context: Context, internal var recyclerView: Recycler
             recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.addItemDecoration(VerticalSpace(20))
         recyclerView.adapter = adapter
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null)
+            FirebaseDatabase.getInstance().getReference().child("users").child(user.uid).child("rssCache").setValue(DBWork.XMLToString(data!!))
     }
 
     private fun ProcessXml(data: Document?) {
+        feedItems = ArrayList()
         if (data != null) {
-            feedItems = ArrayList()
             val root = data.getDocumentElement()
             val channel = root.getChildNodes().item(1)
             val items = channel.getChildNodes()

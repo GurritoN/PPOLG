@@ -12,8 +12,8 @@ import androidx.navigation.ui.NavigationUI
 import com.squareup.picasso.Picasso
 import androidx.core.content.ContextCompat.startActivity
 import android.content.Intent
-
-
+import androidx.core.content.ContextCompat
+import android.net.ConnectivityManager
 
 
 class FeedsAdapter(internal var context: Context, internal var feedItems: ArrayList<FeedItem>) : RecyclerView.Adapter<FeedsAdapter.MyViewHolder>() {
@@ -30,9 +30,12 @@ class FeedsAdapter(internal var context: Context, internal var feedItems: ArrayL
         holder.Date.text = current.pubDate
         Picasso.with(context).load(current.thumbnailUrl).into(holder.Thumbnail)
         holder.cardView.setOnClickListener {
-            val intent = Intent(context, BrowserActivity::class.java)
-            intent.putExtra("url", current.link)
-            startActivity(context, intent, null)
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            if (cm.activeNetworkInfo != null && cm.activeNetworkInfo.isConnected) {
+                val intent = Intent(context, BrowserActivity::class.java)
+                intent.putExtra("url", current.link)
+                startActivity(context, intent, null)
+            }
         }
     }
 
