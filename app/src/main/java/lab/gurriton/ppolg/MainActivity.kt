@@ -1,5 +1,6 @@
 package lab.gurriton.ppolg
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -23,7 +24,7 @@ import android.net.NetworkInfo
 import android.content.Context.CONNECTIVITY_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.net.ConnectivityManager
-
+import android.net.Network
 
 
 class MainActivity : AppCompatActivity(){
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -44,8 +46,15 @@ class MainActivity : AppCompatActivity(){
             findNavController(R.id.nav_host).navigate(R.id.userPage)
         }
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = cm.activeNetworkInfo
-        val isConnected = activeNetwork.isConnected
+        cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback(){
+            override fun onAvailable(network: Network){
+                network_icon.setImageResource(R.drawable.ic_network_active)
+            }
+            override fun onLost(network: Network){
+                network_icon.setImageResource(R.drawable.ic_network_bad)
+            }
+        })
+
     }
 
     override fun onResume() {
