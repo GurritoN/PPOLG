@@ -3,6 +3,7 @@ package lab.gurriton.ppolg
 import android.app.Activity.RESULT_OK
 import android.Manifest
 import android.app.ProgressDialog
+import android.app.ProgressDialog.show
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -95,7 +96,9 @@ class EditUserInfo : Fragment() {
             progressDialog?.setMessage("Loading...")
             progressDialog?.show()
             val user = DBWork.GetUser()
-            edit_email.setText(user!!.email)
+            if (user != null) {
+                edit_email.setText(user.email)
+            }
             DBWork.GetUserInfo()?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val userInfo: UserInfo? = dataSnapshot.getValue(UserInfo::class.java)
@@ -176,12 +179,14 @@ class EditUserInfo : Fragment() {
             negativeCallbacks++
         if (positiveCallbacks + negativeCallbacks == callbacksNeeded) {
             progressDialog?.dismiss()
-            if (negativeCallbacks == 0)
-                Snackbar.make(view!!, "Saved!", Snackbar.LENGTH_LONG)
-                        .show()
-            else
-                Snackbar.make(view!!, "Something went wrong...", Snackbar.LENGTH_LONG)
-                        .show()
+            if (view != null) {
+                if (negativeCallbacks == 0)
+                    Snackbar.make(view!!, "Saved!", Snackbar.LENGTH_LONG)
+                            .show()
+                else
+                    Snackbar.make(view!!, "Something went wrong...", Snackbar.LENGTH_LONG)
+                            .show()
+            }
         }
     }
 
@@ -196,15 +201,16 @@ class EditUserInfo : Fragment() {
                 savingCallback(it.isSuccessful)
             }
 
-            DBWork.SaveUserInfo(UserInfo(email, firstName, lastName, phone, rss))!!.addOnCompleteListener { savingCallback(it.isSuccessful) }
+            DBWork.SaveUserInfo(UserInfo(email, firstName, lastName, phone, rss))?.addOnCompleteListener { savingCallback(it.isSuccessful) }
 
             if (photo != null) {
-                DBWork.SaveAvatar(photo)!!.addOnCompleteListener { savingCallback(it.isSuccessful) }
+                DBWork.SaveAvatar(photo)?.addOnCompleteListener { savingCallback(it.isSuccessful) }
             }
         }
     }
 
     override fun onPause() {
+        progressDialog = null
         email = edit_email?.text.toString()
         firstName = edit_first_name?.text.toString()
         lastName = edit_last_name?.text.toString()
